@@ -16,7 +16,7 @@ HOST = os.environ.get('HOST')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG_VALUE') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -29,7 +29,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
+    'channels',
     'core.apps.CoreConfig',
+    'chess.apps.ChessConfig',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +64,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
+ASGI_APPLICATION = "mysite.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
