@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'channels',
     'core.apps.CoreConfig',
-    'chess.apps.ChessConfig',
+    'game.apps.GameConfig',
 ]
 
 MIDDLEWARE = [

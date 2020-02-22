@@ -22,7 +22,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js" integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz" crossorigin="anonymous"></script>
 <script>
 var board = null
-var game = new Chess()
+var game = new Chess('{{fen}}')
 var $status = $('#status')
 var $fen = $('#fen')
 var $pgn = $('#pgn')
@@ -122,6 +122,7 @@ var config = {
   onDragStart: onDragStart,
   onDrop: onDrop,
   onSnapEnd: onSnapEnd,
+  position: game.fen(),
   pieceTheme: 'http://chessboardjs.com/img/chesspieces/alpha/{piece}.png',
 }
 board = Chessboard('myBoard', config)

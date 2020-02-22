@@ -22,7 +22,7 @@ def join_game(request, game_code):
     else:
         return redirect('spectate', game_code)
     
-    return render(request, 'chess/game.html', {
+    return render(request, 'game/game.html', {
         'color': color,
         'fen': game.fen,
         'group_name': game_code,

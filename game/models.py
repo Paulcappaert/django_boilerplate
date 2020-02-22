@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import User
 import secrets
+import chess
 
 class Move(models.Model):
     source = models.CharField(max_length=2)
@@ -42,7 +43,7 @@ class Game(models.Model):
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = secrets.token_hex(12)
-            self.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+            self.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
             self.move_index = 0
         return super().save(*args, **kwargs)
 
@@ -56,7 +57,13 @@ class Game(models.Model):
     def make_move(self, source, target):
         new_move = Move.objects.create(source=source, target=target)
         self.move_index += 1
+
         # update fen string here
+        board = chess.Board(self.fen)
+        move = chess.Move.from_uci(source + target)
+        board.push(move)
+        self.fen = board.fen()
+
         if self.first_move:
             self.last_move.next_move = new_move
             self.last_move.save()
