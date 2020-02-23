@@ -9,7 +9,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.game_code = self.scope['url_route']['kwargs']['game']
-        if await self.game_exists(self.game_code):      
+        if await self.game_exists():      
             self.group_name = f'chess_{self.game_code}'
             
             await self.channel_layer.group_add(
@@ -17,7 +17,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.channel_name,
             )
 
-            self.accept()
+            await self.accept()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
