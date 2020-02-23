@@ -19,12 +19,14 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
 
             await self.accept()
+        close_old_connections()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.group_name,
             self.channel_name
         )
+        close_old_connections()
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -43,6 +45,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     })
                 }
             )
+
+        close_old_connections()
 
     # Receive message from room group
     async def game_move(self, event):
