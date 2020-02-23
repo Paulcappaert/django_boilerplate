@@ -2,4 +2,9 @@
 {% block content %}
     <h1>Chess</h1>
     <a href="{% url 'create-game' %}" class="btn btn-primary">New Game</a>
+    <h1>Your open games</h1>
+    {% for game in games %}
+        <h2>{{game.p1.username}} v. {{game.p2.username}}</h2>
+        <a href="{% url 'join-game' game.code %}">join game</a>
+    {% endfor %}
 {% endblock content %}

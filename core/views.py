@@ -2,8 +2,14 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm
 from django.contrib import messages
+from game.models import Game
 
 def home(request):
+    if request.user.is_authenticated:
+        games = request.user.p1_games.all().union(request.user.p2_games.all())
+        return render(request, 'core/home.html', {
+            'games': games,
+        })
     return render(request, 'core/home.html')
 
 def register(request):
