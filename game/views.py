@@ -1,18 +1,23 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Game
+from .forms import GameForm
+from core.models import User
+from django.views.decorators.http import require_GET, require_POST
 
 @login_required
 def create_game(request):
-    game = Game.objects.create(
-
-    )
+    if request.method == 'POST':
+        form = GameForm(request.POST)
+        if form.is_valid():
+            game = form.start_game(request.user)
+            return redirect('join-game', game.code)
+    else:
+        form = GameForm()
     
+    return render(request, 'game/create.html', {'form': form})
 
-def spectate_game(request, game_code):
-    game = Game.objects.get(code=game_code)
-
-@login_required
+@require_GET
 def join_game(request, game_code):
     game = Game.objects.get(code=game_code)
     if request.user.id == game.p1.id:
@@ -20,7 +25,7 @@ def join_game(request, game_code):
     elif request.user.id == game.p2.id:
         color = 'b'
     else:
-        return redirect('spectate', game_code)
+        color = ''
     
     return render(request, 'game/game.html', {
         'color': color,
