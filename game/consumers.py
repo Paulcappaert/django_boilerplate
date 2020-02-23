@@ -4,6 +4,7 @@ import json
 from channels.auth import get_user
 from .models import Game
 from channels.db import database_sync_to_async
+from django.db import close_old_connections
 
 class GameConsumer(AsyncWebsocketConsumer):
 
@@ -50,10 +51,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def game_exists(self):
+        close_old_connections()
         return Game.objects.filter(code=self.game_code).exists()
 
     @database_sync_to_async
     def make_move(self, source, target):
+        close_old_connections()
         game = Game.objects.get(code=self.game_code)
         user = self.scope['user']
         if game.can_move(user):
