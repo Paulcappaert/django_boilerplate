@@ -9,24 +9,21 @@ from django.db import close_old_connections
 class GameConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-        self.game_code = self.scope['url_route']['kwargs']['game']
-        if await self.game_exists():      
-            self.group_name = f'chess_{self.game_code}'
-            
-            await self.channel_layer.group_add(
-                self.group_name,
-                self.channel_name,
-            )
+        self.game_code = self.scope['url_route']['kwargs']['game']     
+        self.group_name = f'chess_{self.game_code}'
+        
+        await self.channel_layer.group_add(
+            self.group_name,
+            self.channel_name,
+        )
 
-            await self.accept()
-        close_old_connections()
+        await self.accept()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.group_name,
             self.channel_name
         )
-        close_old_connections()
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -46,17 +43,10 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-        close_old_connections()
-
     # Receive message from room group
     async def game_move(self, event):
         move = event['move']
         await self.send(text_data=move)
-
-    @database_sync_to_async
-    def game_exists(self):
-        close_old_connections()
-        return Game.objects.filter(code=self.game_code).exists()
 
     @database_sync_to_async
     def make_move(self, source, target):
