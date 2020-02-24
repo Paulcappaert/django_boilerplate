@@ -77,13 +77,13 @@ class Game(models.Model):
             self.last_move = new_move
             self.save()
 
-        # channel_layer = get_channel_layer()
-        # async_to_sync(channel_layer.group_send)(
-        # f'chess_{self.code}', 
-        # {
-        #     "type": "game_move",
-        #     'move': json.dumps({
-        #         'source': source,
-        #         'target': target,
-        #     })
-        # })
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+        f'chess_{self.code}', 
+        {
+            "type": "game_move",
+            'move': json.dumps({
+                'source': source,
+                'target': target,
+            })
+        })
