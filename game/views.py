@@ -4,6 +4,8 @@ from .models import Game
 from .forms import GameForm
 from core.models import User
 from django.views.decorators.http import require_GET, require_POST
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 @login_required
 def create_game(request):
@@ -32,3 +34,19 @@ def join_game(request, game_code):
         'fen': game.fen,
         'group_name': game_code,
     })
+
+@csrf_exempt
+@require_POST
+@login_required
+def make_move(request, game_code):
+    user = request.user
+    game = get_object_or_404(Game, code=game_code)
+    source = request.POST['source']
+    target = request.POST['target']
+    if game.can_move(user):
+        game.make_move(source, target)
+        data = {'success': True}
+    else:
+        data = {'success': False}
+    
+    return JsonResponse(data)
