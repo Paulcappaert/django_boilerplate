@@ -36,9 +36,9 @@ if (window.location.protocol === 'https:') {
     protocol = 'ws:';
 }
 
-var chatSocket = new WebSocket(
-    protocol + '//' + window.location.host +
-    '/ws/chess/' + groupName + '/');
+// var chatSocket = new WebSocket(
+//     protocol + '//' + window.location.host +
+//     '/ws/chess/' + groupName + '/');
 
 function onDragStart (source, piece, position, orientation) {
   // do not pick up pieces if the game is over
@@ -138,18 +138,18 @@ var config = {
 board = Chessboard('myBoard', config)
 updateStatus()
 
-chatSocket.onmessage = function(e) {
-    console.log('message recieved')
-    var data = JSON.parse(e.data)
-    var source = data['source']
-    var target = data['target']
-    var move = game.move({
-        from: source,
-        to: target,
-        promotion: 'q' // NOTE: always promote to a queen for example simplicity
-    })
-    board.move(source + '-' + target)
-    updateStatus()
-}
+// chatSocket.onmessage = function(e) {
+//     console.log('message recieved')
+//     var data = JSON.parse(e.data)
+//     var source = data['source']
+//     var target = data['target']
+//     var move = game.move({
+//         from: source,
+//         to: target,
+//         promotion: 'q' // NOTE: always promote to a queen for example simplicity
+//     })
+//     board.move(source + '-' + target)
+//     updateStatus()
+// }
 </script>
 {% endblock content %}
