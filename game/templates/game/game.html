@@ -26,6 +26,12 @@
   var $pgn = $('#pgn')
   var color = '{{ color }}'
   var groupName = '{{ group_name }}'
+  var orientation = ''
+  if(color == 'w') {
+    orientation = 'white'
+  } else {
+    orientation = 'black'
+  }
   
   var protocol = '';
   if (window.location.protocol === 'https:') {
@@ -131,6 +137,7 @@
     onDrop: onDrop,
     onSnapEnd: onSnapEnd,
     position: game.fen(),
+    orientation: orientation,
     pieceTheme: 'http://chessboardjs.com/img/chesspieces/alpha/{piece}.png',
   }
   board = Chessboard('myBoard', config)
