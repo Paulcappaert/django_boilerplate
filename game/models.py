@@ -48,6 +48,17 @@ class Game(models.Model):
             self.code = secrets.token_hex(12)
             self.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
             self.move_index = 0
+
+            #send opponent notification
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+            f'user_{self.p2.username}', 
+            {
+                "type": "notification",
+                'message': json.dumps({
+                    'game_code': self.code,
+                })
+            })
         return super().save(*args, **kwargs)
 
     def can_move(self, user):
