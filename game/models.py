@@ -2,7 +2,6 @@ from django.db import models
 from core.models import User
 import secrets
 import chess
-import json
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -43,14 +42,15 @@ class Game(models.Model):
         move = chess.Move.from_uci(source + target)
         board.push(move)
         self.fen = board.fen()
+        self.save()
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
         f'chess_{self.code}', 
         {
             "type": "game_move",
-            'move': json.dumps({
+            'move': {
                 'source': source,
                 'target': target,
-            })
+            }
         })

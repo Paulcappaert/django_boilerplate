@@ -1,7 +1,7 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 import json
 
-class GameConsumer(AsyncWebsocketConsumer):
+class GameConsumer(AsyncJsonWebsocketConsumer):
 
     async def connect(self):
         self.game_code = self.scope['url_route']['kwargs']['game']     
@@ -23,4 +23,4 @@ class GameConsumer(AsyncWebsocketConsumer):
     # Receive message from room group
     async def game_move(self, event):
         move = event['move']
-        await self.send(text_data=move)
+        await self.send_json(content=move)
