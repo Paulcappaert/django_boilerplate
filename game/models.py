@@ -5,6 +5,7 @@ import chess
 import json
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.utils import timezone
 
 class Move(models.Model):
     source = models.CharField(max_length=2)
@@ -15,6 +16,7 @@ class Move(models.Model):
         null=True,
         related_name='prev_move',
     )
+    time_made = models.DateTimeField(auto_now_add=True)
 
 class Game(models.Model):
     code = models.CharField(max_length=24, unique=True)
@@ -42,6 +44,20 @@ class Game(models.Model):
         related_name='last',
         null=True,
     )
+    started = models.DateTimeField(auto_now_add=True)
+    p1_last = models.DateTimeField(auto_now_add=True)
+    p2_last = models.DateTimeField(auto_now_add=True)
+
+    def start_timer(self):
+        if self.move_index == 2:
+            self.start = timezone.now()
+            self.p1_seconds = timezone.now()
+            self.p2_seconds = timezone.now()
+            self.save()
+            return True
+        elif self.move_index > 1:
+            return True
+        return False
 
     def save(self, *args, **kwargs):
         if not self.code:

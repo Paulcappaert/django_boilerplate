@@ -28,11 +28,30 @@ def join_game(request, game_code):
         color = 'b'
     else:
         color = ''
+
+    if game.start_timer():
+        if color == 'b':
+            time = 100 - (game.p2_last - game.started).seconds
+            opTime = 100 - (game.p1_last - game.started).seconds
+        else:
+            time = 100 - (game.p2_last - game.started).seconds
+            opTime = 100 - (game.p1_last - game.started).seconds
+    else:
+        time = 0
+        opTime = 0
+
+    if color == 'w' and game.move_index % 2 == 0:
+        your_turn = True
+    else:
+        your_turn = False
     
     return render(request, 'game/game.html', {
         'color': color,
         'fen': game.fen,
         'group_name': game_code,
+        'time': time,
+        'opTime': opTime,
+        'your_turn': your_turn
     })
 
 @csrf_exempt

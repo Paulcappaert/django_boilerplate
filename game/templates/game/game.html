@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block headers %}
 <link rel="stylesheet"
       href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
@@ -7,23 +8,59 @@
 {% endblock %}
 {% block content %}
 <h1>Game</h1>
+<div id="oppCounter">
+  <div class="values"></div>
+</div>
 <div id="myBoard" style="width: 400px"></div>
-<label>Status:</label>
-<div id="status"></div>
-<label>FEN:</label>
-<div id="fen"></div>
-<label>PGN:</label>
-<div id="pgn"></div>
+<div id="counter">
+    <div class="values"></div>
+  </div>
 {% endblock content %}
 {% block js %}
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js" integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js" integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz" crossorigin="anonymous"></script>
+<script src="{% static 'game/easytimer.min.js' %}"></script>
 <script>
+  var time = {{time}};
+  var opTime = {{opTime}};
+
+  var timeMinutes = time / 60
+  var opTimeMinutes = opTime / 60
+  var timeSeconds = time % 60
+  var opTimeSeconds = time % 60
+
+  var timer = new easytimer.Timer();
+  var opTimer = new easytimer.Timer();
+  
+  timer.start({countdown: true, startValues: {seconds: timeSeconds, minutes: timeMinutes}});
+  opTimer.start({countdown: true, startValues: {seconds: opTimeSeconds, minutes: opTimeMinutes}});
+
+  {% if your_turn %}
+    opTimer.stop()
+  {% else %}
+    timer.stop()
+  {% endif %}
+
+  $('#counter .values').html(timer.getTimeValues().toString());
+  timer.addEventListener('secondsUpdated', function (e) {
+      $('#counter .values').html(timer.getTimeValues().toString());
+  });
+
+  timer.addEventListener('targetAchieved', function (e) {
+      $('#counter .values').html('KABOOM!!');
+  });
+
+  $('#oppCounter .values').html(timer.getTimeValues().toString());
+  timer.addEventListener('secondsUpdated', function (e) {
+      $('#oppCounter .values').html(timer.getTimeValues().toString());
+  });
+
+  timer.addEventListener('targetAchieved', function (e) {
+      $('#oppCounter .values').html('KABOOM!!');
+  });
+
   var board = null
   var game = new Chess('{{fen}}')
-  var $status = $('#status')
-  var $fen = $('#fen')
-  var $pgn = $('#pgn')
   var color = '{{ color }}'
   var groupName = '{{ group_name }}'
   var orientation = ''
@@ -124,10 +161,6 @@
         status += ', ' + moveColor + ' is in check'
       }
     }
-  
-    $status.html(status)
-    $fen.html(game.fen())
-    $pgn.html(game.pgn())
   }
   
   var config = {
