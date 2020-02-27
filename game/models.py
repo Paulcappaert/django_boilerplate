@@ -6,16 +6,6 @@ import json
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-class Move(models.Model):
-    source = models.CharField(max_length=2)
-    target = models.CharField(max_length=2)
-    next_move = models.OneToOneField(
-        'Move',
-        on_delete=models.CASCADE,
-        null=True,
-        related_name='prev_move',
-    )
-
 class Game(models.Model):
     code = models.CharField(max_length=24, unique=True)
     p1 = models.ForeignKey(
@@ -30,18 +20,6 @@ class Game(models.Model):
     )
     fen = models.CharField(max_length=100)
     move_index = models.IntegerField()
-    first_move = models.OneToOneField(
-        Move, 
-        on_delete=models.CASCADE, 
-        related_name='first',
-        null=True,
-    )
-    last_move = models.OneToOneField(
-        Move,
-        on_delete=models.CASCADE,
-        related_name='last',
-        null=True,
-    )
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -58,7 +36,6 @@ class Game(models.Model):
         return False
 
     def make_move(self, source, target):
-        new_move = Move.objects.create(source=source, target=target)
         self.move_index += 1
 
         # update fen string here
@@ -66,16 +43,6 @@ class Game(models.Model):
         move = chess.Move.from_uci(source + target)
         board.push(move)
         self.fen = board.fen()
-
-        if self.first_move:
-            self.last_move.next_move = new_move
-            self.last_move.save()
-            self.last_move = new_move
-            self.save()
-        else:
-            self.first_move = new_move
-            self.last_move = new_move
-            self.save()
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
