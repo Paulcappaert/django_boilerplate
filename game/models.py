@@ -35,12 +35,13 @@ class Game(models.Model):
         return False
 
     def make_move(self, source, target):
-        self.move_index += 1
-
-        # update fen string here
         board = chess.Board(self.fen)
         move = chess.Move.from_uci(source + target)
+        if move not in board.legal_moves:
+            return False
+        
         board.push(move)
+        self.move_index += 1
         self.fen = board.fen()
         self.save()
 
@@ -54,3 +55,5 @@ class Game(models.Model):
                 'target': target,
             }
         })
+
+        return True
