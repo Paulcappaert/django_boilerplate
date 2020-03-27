@@ -4,8 +4,16 @@ import secrets
 import chess
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.contrib.postgres.fields import ArrayField
 
 class Game(models.Model):
+    STATES = (
+        ('o', 'open'),
+        ('d', 'draw'),
+        ('1', 'white wins'),
+        ('0', 'black wins'),
+    )
+
     code = models.CharField(max_length=24, unique=True)
     p1 = models.ForeignKey(
         User, 
@@ -19,6 +27,8 @@ class Game(models.Model):
     )
     fen = models.CharField(max_length=100)
     move_index = models.IntegerField()
+    moves = models.TextField()
+    status = models.CharField(max_length=1, choices=STATES)
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -40,6 +50,7 @@ class Game(models.Model):
         if move not in board.legal_moves:
             return False
         
+        self.moves += move.uci() + ','
         board.push(move)
         self.move_index += 1
         self.fen = board.fen()
