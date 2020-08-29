@@ -1,4 +1,36 @@
 {% extends "core/base.html" %}
 {% block content %}
-    <h1>Chess</h1>
+<h1 id="messages">Chat</h1>
+<!-- <table class="table">
+    <thead>
+        <tr>
+            <th>Player</th>
+            <th>Message</th>
+        </tr>
+    </thead>
+    <tbody id="results">
+    </tbody>
+</table> -->
+<script>
+    var protocol = '';
+    if (window.location.protocol === 'https:') {
+        protocol = 'wss:';
+    } else {
+        protocol = 'ws:';
+    }
+
+    var chatSocket = new WebSocket(
+        protocol + '//' + window.location.host +
+        '/ws/chat/');
+
+    
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        $('#messages').after(
+            '<p>' + data['username'] + ': ' + data['message'] + '</p>'
+        )
+        console.log(data['username'])
+    };
+</script>
+
 {% endblock content %}
