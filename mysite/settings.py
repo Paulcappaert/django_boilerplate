@@ -9,14 +9,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', default="adfgadgag")
 
-HOST = os.environ.get('HOST')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG_VALUE') == 'True'
+DEBUG = os.environ.get('DEBUG_VALUE', default=1)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="*").split(" ")
 
 
 # Application definition
@@ -67,9 +66,13 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    "default": {
+        "ENGINE": os.environ.get("DJANGO_SQL_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": os.environ.get("DJANGO_SQL_DATABASE", default="hello_django_dev"),
+        "USER": os.environ.get("DJANGO_SQL_USER", "hello_django"),
+        "PASSWORD": os.environ.get("DJANGO_SQL_PASSWORD", "hello_django"),
+        "HOST": os.environ.get("DJANGO_SQL_HOST", "localhost"),
+        "PORT": os.environ.get("DJANGO_SQL_PORT", "5432"),
     }
 }
 
