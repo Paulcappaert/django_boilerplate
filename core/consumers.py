@@ -21,7 +21,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': json.dumps({
-                    'message': self.username + ' connected'
+                    'user': self.username,
+                    'message': ' connected',
                 }),
             }
         )
@@ -34,7 +35,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': json.dumps({
-                    'message': self.username + ' disconnected'
+                    'user': self.username,
+                    'message': ' disconnected',
                 }),
             }
         )
@@ -46,7 +48,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         json_data = json.loads(text_data)
-        json_data['message'] = self.username + ': ' + json_data['message']
+        json_data['user'] = self.username
         await self.channel_layer.group_send(
             'chat',
             {
