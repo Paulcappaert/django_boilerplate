@@ -1,6 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 import json
+import redis
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -29,6 +30,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+        self.r = redis.Redis(host='localhost', port=6379, db=0)
+
     async def disconnect(self, close_code):
         await self.channel_layer.group_send(
             'chat',
@@ -56,6 +59,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message': json.dumps(json_data),
             }
         )
+
+        self.r.publish('user_updates', json.dumps(json_data))
 
     async def chat_message(self, event):
         message = event['message']
