@@ -20,7 +20,6 @@ class UserUpdateForm(forms.ModelForm):
 
     def clean(self):
         email = self.cleaned_data.get('email')
-        username = self.cleaned_data.get('username')
         if email and User.objects.filter(email=email).exclude(username=self.instance.username).exists():
             raise forms.ValidationError(u'Email addresses must be unique.')
         return super().clean()

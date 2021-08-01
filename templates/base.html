@@ -68,9 +68,7 @@
       <div class="row">
         <div class="col-md-8">
           {% if messages %} {% for message in messages %}
-          <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-          </div>
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
           {% endfor %} {% endif %} {% block content %}{% endblock %}
         </div>
       </div>
@@ -93,5 +91,12 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script>
+
+    <script src="https://unpkg.com/htmx.org@1.1.0"></script>
+    <script>
+      document.body.addEventListener("htmx:configRequest", (event) => {
+        event.detail.headers["X-CSRFToken"] = "{{ csrf_token }}";
+      });
+    </script>
   </body>
 </html>

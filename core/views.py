@@ -28,7 +28,7 @@ def profile(request):
         if form.is_valid():
             form.save()
             messages.success(request, f'Account updated')
-            return redirect('profile')
+            return render(request, 'core/forms/profile_form.html', {'form': form})
     else:
         form = UserUpdateForm(instance=request.user)
     return render(request, 'core/profile.html', {'form': form})
